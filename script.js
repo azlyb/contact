@@ -21,17 +21,17 @@ form.addEventListener("submit", (e) => {
 
   if (editIndex !== null) {
     contacts[editIndex] = contact;
-    updateTable();
     editIndex = null;
+    rebuildTable();
   } else {
     contacts.push(contact);
-    appendToTable(contact);
+    appendToTable(contact, contacts.length - 1);
   }
 
   form.reset();
 });
 
-function appendToTable(contact, index = contacts.length - 1) {
+function appendToTable(contact, index) {
   const row = tableBody.insertRow();
   row.insertCell().textContent = contact.firstName;
   row.insertCell().textContent = contact.lastName;
@@ -40,21 +40,16 @@ function appendToTable(contact, index = contacts.length - 1) {
   row.insertCell().textContent = contact.phone2;
   row.insertCell().textContent = contact.email;
   row.insertCell().textContent = contact.address;
-  const actionsCell = row.insertCell();
+
+  const editCell = row.insertCell();
   const editBtn = document.createElement("button");
   editBtn.textContent = "Edit";
-  editBtn.addEventListener("click", () => editContact(index));
-  actionsCell.appendChild(editBtn);
+  editBtn.onclick = () => loadContactForEdit(index);
+  editBtn.style.cursor = "pointer";
+  editCell.appendChild(editBtn);
 }
 
-function updateTable() {
-  tableBody.innerHTML = "";
-  contacts.forEach((contact, index) => {
-    appendToTable(contact, index);
-  });
-}
-
-function editContact(index) {
+function loadContactForEdit(index) {
   const contact = contacts[index];
   form.firstName.value = contact.firstName;
   form.lastName.value = contact.lastName;
@@ -64,6 +59,11 @@ function editContact(index) {
   form.email.value = contact.email;
   form.address.value = contact.address;
   editIndex = index;
+}
+
+function rebuildTable() {
+  tableBody.innerHTML = "";
+  contacts.forEach((contact, i) => appendToTable(contact, i));
 }
 
 function createVCF(contact) {
@@ -77,12 +77,13 @@ exportBtn.addEventListener("click", () => {
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
   link.download = "contacts.vcf";
+  document.body.appendChild(link);
   link.click();
   URL.revokeObjectURL(link.href);
+  document.body.removeChild(link);
 });
 
 clearBtn.addEventListener("click", () => {
   contacts = [];
   tableBody.innerHTML = "";
-  editIndex = null;
 });
