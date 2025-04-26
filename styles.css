@@ -1,83 +1,139 @@
-body {
+/* General Reset */
+* {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f4f6f9;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-header nav {
-  background-color: #002147;
+/* Body Styling */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f7f9fc;
+  color: #333;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background-color: #4a90e2;
+  padding: 1rem;
   color: white;
-  padding: 20px 30px;
-  font-size: 24px;
-  font-weight: bold;
-  position: sticky;
-  top: 0;
+  text-align: center;
 }
 
+header h1 {
+  font-size: 1.8rem;
+}
+
+/* Container */
 .container {
-  max-width: 1100px;
-  margin: 30px auto;
-  padding: 20px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-form {
+/* Form */
+form#contact-form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
-form input, form button {
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 16px;
+form#contact-form input,
+form#contact-form select,
+form#contact-form button {
+  padding: 0.8rem;
   border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
-form button {
-  background-color: #c39b00;
+form#contact-form button {
+  background-color: #4a90e2;
   color: white;
-  font-weight: bold;
-  cursor: pointer;
   border: none;
-  grid-column: span 2;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
+form#contact-form button:hover {
+  background-color: #357abd;
+}
+
+/* Actions */
 .actions {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .actions button {
-  background-color: #002147;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  font-weight: bold;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
   border-radius: 8px;
+  border: none;
   cursor: pointer;
+  background-color: #7ed957;
+  color: white;
+  transition: background-color 0.3s;
 }
 
-#contact-table {
+.actions button#clearAll {
+  background-color: #ff6b6b;
+}
+
+.actions button:hover {
+  opacity: 0.9;
+}
+
+/* Table */
+table#contact-table {
   width: 100%;
   border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-#contact-table th, #contact-table td {
-  padding: 12px;
-  border: 1px solid #ddd;
+table#contact-table th,
+table#contact-table td {
+  padding: 1rem;
   text-align: left;
+  border-bottom: 1px solid #eee;
 }
 
-#contact-table button {
-  background-color: #c39b00;
+table#contact-table th {
+  background-color: #4a90e2;
   color: white;
-  padding: 6px 12px;
+}
+
+table#contact-table td button {
+  padding: 0.5rem 1rem;
+  background-color: #f5a623;
+  color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+table#contact-table td button:hover {
+  background-color: #d48806;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  form#contact-form {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
 }
