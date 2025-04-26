@@ -8,11 +8,10 @@
 </head>
 <body>
   <header>
-  <nav>
-    <h1>iCloud Contact Entry Tool</h1>
-    <button id="darkModeToggle">Dark Mode</button>
-  </nav>
-</header>
+    <nav>
+      <h1>iCloud Contact Entry Tool</h1>
+    </nav>
+  </header>
 
   <main class="container">
     <form id="contact-form">
@@ -23,8 +22,7 @@
       <input type="tel" id="phone2" placeholder="Phone 2" />
       <input type="email" id="email" placeholder="Email" />
       <input type="text" id="address" placeholder="Address" />
-      
-      <!-- ✨ Category Dropdown -->
+
       <select id="category">
         <option value="">Select Category</option>
         <option value="Family">Family</option>
@@ -33,7 +31,6 @@
         <option value="Other">Other</option>
       </select>
 
-      <!-- ✨ Photo Upload -->
       <input type="file" id="photo" accept="image/jpeg" />
 
       <button type="submit">Save Contact</button>
@@ -62,15 +59,6 @@
     </table>
   </main>
 
-  <script>
-  const toggle = document.getElementById('darkModeToggle');
-  toggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark');
-    toggle.textContent = document.body.classList.contains('dark') ? 'Light Mode' : 'Dark Mode';
-  });
-</script>
-
-  
   <script src="script.js"></script>
 </body>
 </html>
