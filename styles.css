@@ -5,26 +5,76 @@
   box-sizing: border-box;
 }
 
+/* Light Theme */
+:root {
+  --bg-color: #f7f9fc;
+  --text-color: #333;
+  --header-bg: #4a90e2;
+  --button-bg: #4a90e2;
+  --button-hover: #357abd;
+  --action-bg: #7ed957;
+  --action-clear-bg: #ff6b6b;
+  --table-bg: white;
+  --table-header-bg: #4a90e2;
+  --table-header-text: white;
+  --table-border: #eee;
+}
+
+/* Dark Theme Overrides */
+body.dark {
+  --bg-color: #121212;
+  --text-color: #e0e0e0;
+  --header-bg: #1e1e1e;
+  --button-bg: #2a72e2;
+  --button-hover: #185abc;
+  --action-bg: #5dbb42;
+  --action-clear-bg: #e64545;
+  --table-bg: #1e1e1e;
+  --table-header-bg: #333;
+  --table-header-text: #fff;
+  --table-border: #333;
+}
+
 /* Body Styling */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f7f9fc;
-  color: #333;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
 }
 
 /* Header */
 header {
-  background-color: #4a90e2;
+  background-color: var(--header-bg);
   padding: 1rem;
   color: white;
   text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 header h1 {
   font-size: 1.8rem;
+}
+
+/* Dark mode toggle button */
+#darkModeToggle {
+  padding: 0.5rem 1rem;
+  background-color: var(--button-bg);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#darkModeToggle:hover {
+  background-color: var(--button-hover);
 }
 
 /* Container */
@@ -50,10 +100,12 @@ form#contact-form button {
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  background-color: var(--table-bg);
+  color: var(--text-color);
 }
 
 form#contact-form button {
-  background-color: #4a90e2;
+  background-color: var(--button-bg);
   color: white;
   border: none;
   cursor: pointer;
@@ -61,7 +113,7 @@ form#contact-form button {
 }
 
 form#contact-form button:hover {
-  background-color: #357abd;
+  background-color: var(--button-hover);
 }
 
 /* Actions */
@@ -77,13 +129,13 @@ form#contact-form button:hover {
   border-radius: 8px;
   border: none;
   cursor: pointer;
-  background-color: #7ed957;
+  background-color: var(--action-bg);
   color: white;
   transition: background-color 0.3s;
 }
 
 .actions button#clearAll {
-  background-color: #ff6b6b;
+  background-color: var(--action-clear-bg);
 }
 
 .actions button:hover {
@@ -94,7 +146,7 @@ form#contact-form button:hover {
 table#contact-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
+  background-color: var(--table-bg);
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -104,12 +156,12 @@ table#contact-table th,
 table#contact-table td {
   padding: 1rem;
   text-align: left;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--table-border);
 }
 
 table#contact-table th {
-  background-color: #4a90e2;
-  color: white;
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
 }
 
 table#contact-table td button {
