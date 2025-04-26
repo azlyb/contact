@@ -59,14 +59,15 @@ contactForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const contact = {
-    firstName: document.getElementById('firstName').value.trim(),
-    lastName: document.getElementById('lastName').value.trim(),
-    company: document.getElementById('company').value.trim(),
-    phone1: document.getElementById('phone1').value.trim(),
-    phone2: document.getElementById('phone2').value.trim(),
-    email: document.getElementById('email').value.trim(),
-    address: document.getElementById('address').value.trim(),
-  };
+  firstName: document.getElementById('firstName').value.trim(),
+  lastName: document.getElementById('lastName').value.trim(),
+  company: document.getElementById('company').value.trim(),
+  phone1: document.getElementById('phone1').value.trim(),
+  phone2: document.getElementById('phone2').value.trim(),
+  email: document.getElementById('email').value.trim(),
+  address: document.getElementById('address').value.trim(),
+  category: document.getElementById('category').value.trim(), // ✨ Add this
+};
 
   contacts.push(contact);
   renderContacts();
@@ -81,15 +82,16 @@ function renderContacts() {
     const row = document.createElement('tr');
 
     row.innerHTML = `
-      <td>${contact.firstName}</td>
-      <td>${contact.lastName}</td>
-      <td>${contact.company}</td>
-      <td>${contact.phone1}</td>
-      <td>${contact.phone2}</td>
-      <td>${contact.email}</td>
-      <td>${contact.address}</td>
-      <td><button onclick="editContact(${index})">Edit</button></td>
-    `;
+  <td>${contact.firstName}</td>
+  <td>${contact.lastName}</td>
+  <td>${contact.company}</td>
+  <td>${contact.phone1}</td>
+  <td>${contact.phone2}</td>
+  <td>${contact.email}</td>
+  <td>${contact.address}</td>
+  <td>${contact.category}</td> <!-- ✨ Add this -->
+  <td><button onclick="editContact(${index})">Edit</button></td>
+`;
 
     contactTableBody.appendChild(row);
   });
