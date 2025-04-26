@@ -1,42 +1,50 @@
 body {
-  font-family: Arial, sans-serif;
   margin: 0;
-  padding: 20px;
-  background-color: #f4f4f4;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f7f9fc;
+}
+
+header nav {
+  background-color: #002147;
+  color: white;
+  padding: 15px 30px;
+  font-size: 24px;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .container {
-  max-width: 900px;
-  margin: auto;
-  background: #fff;
+  max-width: 1100px;
+  margin: 40px auto;
   padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 form {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
   margin-bottom: 20px;
 }
 
-form input {
-  padding: 10px;
+form input, form button {
+  padding: 12px;
+  border-radius: 8px;
   font-size: 16px;
   border: 1px solid #ccc;
-  border-radius: 4px;
 }
 
 form button {
-  grid-column: span 2;
-  padding: 10px;
-  background-color: #28a745;
+  background-color: #c39b00;
   color: white;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
+  font-weight: bold;
   cursor: pointer;
+  border: none;
+  grid-column: span 2;
 }
 
 .actions {
@@ -46,13 +54,13 @@ form button {
 }
 
 .actions button {
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background-color: #007bff;
+  background-color: #002147;
   color: white;
+  padding: 10px 20px;
+  border: none;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 #contact-table {
@@ -61,7 +69,7 @@ form button {
 }
 
 #contact-table th, #contact-table td {
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ddd;
   text-align: left;
 }
