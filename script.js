@@ -1,14 +1,23 @@
 // --- Utility Functions ---
 
-// Formats phone numbers while typing/pasting
+// Proper Malaysia phone formatting
 function applyPhoneFormat(value) {
   value = value.replace(/\D/g, ''); // remove all non-digits
 
-  if (value.startsWith('6')) value = '+' + value;
-  else value = '+6' + value;
+  // Handle Malaysian numbers
+  if (value.startsWith('0')) {
+    value = '+60' + value.substring(1);
+  } else if (value.startsWith('60')) {
+    value = '+' + value;
+  } else if (!value.startsWith('+60')) {
+    value = '+60' + value;
+  }
 
-  if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5);
-  if (value.length > 10) value = value.slice(0, 10) + ' ' + value.slice(10);
+  if (value.length === 12) {
+    value = value.slice(0, 6) + '-' + value.slice(6);
+  } else if (value.length === 13) {
+    value = value.slice(0, 7) + '-' + value.slice(7);
+  }
 
   return value.slice(0, 15); // max 15 characters
 }
@@ -24,21 +33,6 @@ function attachPhoneFormatter(input) {
     const pasteData = (e.clipboardData || window.clipboardData).getData('text');
     input.value = applyPhoneFormat(pasteData);
   });
-}
-
-// Formats raw phone string for VCF export
-function formatPhoneForVCF(raw) {
-  if (!raw) return '';
-
-  const digits = raw.replace(/\D/g, '');
-  if (digits.length < 10) return '';
-
-  let formatted = '+6';
-  formatted += digits.slice(0, 3) + '-';
-  formatted += digits.slice(3, 7) + ' ';
-  formatted += digits.slice(7, 11);
-
-  return formatted;
 }
 
 // --- Main App Logic ---
@@ -61,13 +55,9 @@ contactForm.addEventListener('submit', (e) => {
   let phone1 = document.getElementById('phone1').value.trim();
   let phone2 = document.getElementById('phone2').value.trim();
 
-  // ✨ Auto-add +6 if missing
-  if (phone1 && !phone1.startsWith('+6')) {
-    phone1 = '+6' + phone1.replace(/[^0-9]/g, '');
-  }
-  if (phone2 && !phone2.startsWith('+6')) {
-    phone2 = '+6' + phone2.replace(/[^0-9]/g, '');
-  }
+  // Clean and fix phone numbers properly
+  phone1 = applyPhoneFormat(phone1);
+  phone2 = applyPhoneFormat(phone2);
 
   const contact = {
     firstName: document.getElementById('firstName').value.trim(),
@@ -79,9 +69,6 @@ contactForm.addEventListener('submit', (e) => {
     address: document.getElementById('address').value.trim(),
     category: document.getElementById('category').value.trim(),
   };
-
-  // ... rest of your saving logic
-});
 
   contacts.push(contact);
   renderContacts();
@@ -96,16 +83,16 @@ function renderContacts() {
     const row = document.createElement('tr');
 
     row.innerHTML = `
-  <td>${contact.firstName}</td>
-  <td>${contact.lastName}</td>
-  <td>${contact.company}</td>
-  <td>${contact.phone1}</td>
-  <td>${contact.phone2}</td>
-  <td>${contact.email}</td>
-  <td>${contact.address}</td>
-  <td>${contact.category}</td> <!-- ✨ Add this -->
-  <td><button onclick="editContact(${index})">Edit</button></td>
-`;
+      <td>${contact.firstName}</td>
+      <td>${contact.lastName}</td>
+      <td>${contact.company}</td>
+      <td>${contact.phone1}</td>
+      <td>${contact.phone2}</td>
+      <td>${contact.email}</td>
+      <td>${contact.address}</td>
+      <td>${contact.category}</td>
+      <td><button onclick="editContact(${index})">Edit</button></td>
+    `;
 
     contactTableBody.appendChild(row);
   });
@@ -122,6 +109,7 @@ function editContact(index) {
   document.getElementById('phone2').value = contact.phone2;
   document.getElementById('email').value = contact.email;
   document.getElementById('address').value = contact.address;
+  document.getElementById('category').value = contact.category;
 
   contacts.splice(index, 1); // Remove from list to allow re-saving
 }
