@@ -1,30 +1,21 @@
 // --- Utility Functions ---
 
-function capitalizeWords(str) {
-  return str.replace(/\b\w/g, char => char.toUpperCase());
-}
-
+// Formats phone numbers while typing/pasting
 function applyPhoneFormat(value) {
-  value = value.replace(/\D/g, ''); // remove all non-digits
-
-  if (!value.startsWith('6')) value = '6' + value; // ensure it starts with 6
-  value = '+' + value;
-
+  value = value.replace(/\D/g, ''); // Remove non-digits
+  if (value.startsWith('6')) value = '+' + value;
+  else value = '+6' + value;
   if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5);
   if (value.length > 10) value = value.slice(0, 10) + value.slice(10);
-
-  return value.slice(0, 15);
+  return value.slice(0, 14); // +6012-3456789
 }
 
-function formatPhoneInput(input) {
+// Auto-capitalize each word
+function capitalizeWords(input) {
   input.addEventListener('input', () => {
-    input.value = applyPhoneFormat(input.value);
-  });
-
-  input.addEventListener('paste', (e) => {
-    e.preventDefault();
-    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-    input.value = applyPhoneFormat(pasteData);
+    input.value = input.value
+      .toLowerCase()
+      .replace(/\b\w/g, char => char.toUpperCase());
   });
 }
 
@@ -34,58 +25,69 @@ const contactForm = document.getElementById('contact-form');
 const contactTableBody = document.querySelector('#contact-table tbody');
 const exportButton = document.getElementById('exportVCF');
 const clearButton = document.getElementById('clearAll');
+const photoInput = document.getElementById('photo');
 
 let contacts = [];
 
-formatPhoneInput(document.getElementById('phone1'));
-formatPhoneInput(document.getElementById('phone2'));
+// Attach phone formatter
+function attachPhoneFormatter(input) {
+  input.addEventListener('input', () => {
+    input.value = applyPhoneFormat(input.value);
+  });
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+    input.value = applyPhoneFormat(pasteData);
+  });
+}
+
+attachPhoneFormatter(document.getElementById('phone1'));
+attachPhoneFormatter(document.getElementById('phone2'));
+
+// Auto-capitalize fields
+capitalizeWords(document.getElementById('firstName'));
+capitalizeWords(document.getElementById('lastName'));
+capitalizeWords(document.getElementById('address'));
+capitalizeWords(document.getElementById('company'));
 
 // Handle form submission
-contactForm.addEventListener('submit', (e) => {
+contactForm.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  const photoInput = document.getElementById('photo');
-
-  if (photoInput.files.length > 0) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const photoBase64 = e.target.result.split(',')[1];
-      saveContact(photoBase64);
-    };
-    reader.readAsDataURL(photoInput.files[0]);
-  } else {
-    saveContact('');
-  }
-});
-
-function saveContact(photoBase64) {
   let phone1 = document.getElementById('phone1').value.trim();
   let phone2 = document.getElementById('phone2').value.trim();
 
   if (phone1 && !phone1.startsWith('+6')) {
-    phone1 = '+6' + phone1.replace(/[^0-9]/g, '');
+    phone1 = applyPhoneFormat(phone1);
   }
   if (phone2 && !phone2.startsWith('+6')) {
-    phone2 = '+6' + phone2.replace(/[^0-9]/g, '');
+    phone2 = applyPhoneFormat(phone2);
+  }
+
+  let photoBase64 = '';
+  if (photoInput.files.length > 0) {
+    photoBase64 = await fileToBase64(photoInput.files[0]);
+    photoBase64 = photoBase64.split(',')[1]; // remove the "data:image/jpeg;base64," part
   }
 
   const contact = {
-    firstName: capitalizeWords(document.getElementById('firstName').value.trim()),
-    lastName: capitalizeWords(document.getElementById('lastName').value.trim()),
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
     company: document.getElementById('company').value.trim(),
     phone1: phone1,
     phone2: phone2,
     email: document.getElementById('email').value.trim(),
-    address: capitalizeWords(document.getElementById('address').value.trim()),
+    address: document.getElementById('address').value.trim(),
     category: document.getElementById('category').value.trim(),
-    photoBase64: photoBase64
+    photo: photoBase64
   };
 
   contacts.push(contact);
   renderContacts();
   contactForm.reset();
-}
+});
 
+// Render contacts in table
 function renderContacts() {
   contactTableBody.innerHTML = '';
 
@@ -106,6 +108,7 @@ function renderContacts() {
   });
 }
 
+// Edit a contact
 function editContact(index) {
   const contact = contacts[index];
 
@@ -116,11 +119,12 @@ function editContact(index) {
   document.getElementById('phone2').value = contact.phone2;
   document.getElementById('email').value = contact.email;
   document.getElementById('address').value = contact.address;
-  document.getElementById('category').value = contact.category || '';
+  document.getElementById('category').value = contact.category;
 
-  contacts.splice(index, 1); // Remove to allow re-saving
+  contacts.splice(index, 1); // remove from list so we re-save it
 }
 
+// Export contacts to VCF
 exportButton.addEventListener('click', () => {
   if (contacts.length === 0) {
     alert('No contacts to export.');
@@ -136,17 +140,15 @@ exportButton.addEventListener('click', () => {
   const blob = new Blob([vcfContent], { type: 'text/vcard' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-
   a.href = url;
   a.download = 'contacts.vcf';
   a.click();
-
   URL.revokeObjectURL(url);
 });
 
+// Generate a single VCF entry
 function generateVCF(contact) {
   let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
-
   vcf += `N:${contact.lastName};${contact.firstName};;;\n`;
   vcf += `FN:${contact.firstName} ${contact.lastName}\n`;
 
@@ -156,13 +158,23 @@ function generateVCF(contact) {
   if (contact.email) vcf += `EMAIL:${contact.email}\n`;
   if (contact.address) vcf += `ADR;TYPE=HOME:;;${contact.address};;;;\n`;
   if (contact.category) vcf += `CATEGORIES:${contact.category}\n`;
-  if (contact.photoBase64) vcf += `PHOTO;ENCODING=b;TYPE=JPEG:${contact.photoBase64}\n`;
+  if (contact.photo) vcf += `PHOTO;ENCODING=b;TYPE=JPEG:${contact.photo}\n`;
 
   vcf += "END:VCARD\n";
-
   return vcf;
 }
 
+// Convert file to base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+// Clear all contacts
 clearButton.addEventListener('click', () => {
   if (confirm('Are you sure you want to delete all contacts?')) {
     contacts = [];
