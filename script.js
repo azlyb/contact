@@ -58,16 +58,30 @@ attachPhoneFormatter(document.getElementById('phone2'));
 contactForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
+  let phone1 = document.getElementById('phone1').value.trim();
+  let phone2 = document.getElementById('phone2').value.trim();
+
+  // ✨ Auto-add +6 if missing
+  if (phone1 && !phone1.startsWith('+6')) {
+    phone1 = '+6' + phone1.replace(/[^0-9]/g, '');
+  }
+  if (phone2 && !phone2.startsWith('+6')) {
+    phone2 = '+6' + phone2.replace(/[^0-9]/g, '');
+  }
+
   const contact = {
-  firstName: document.getElementById('firstName').value.trim(),
-  lastName: document.getElementById('lastName').value.trim(),
-  company: document.getElementById('company').value.trim(),
-  phone1: document.getElementById('phone1').value.trim(),
-  phone2: document.getElementById('phone2').value.trim(),
-  email: document.getElementById('email').value.trim(),
-  address: document.getElementById('address').value.trim(),
-  category: document.getElementById('category').value.trim(), // ✨ Add this
-};
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    company: document.getElementById('company').value.trim(),
+    phone1: phone1,
+    phone2: phone2,
+    email: document.getElementById('email').value.trim(),
+    address: document.getElementById('address').value.trim(),
+    category: document.getElementById('category').value.trim(),
+  };
+
+  // ... rest of your saving logic
+});
 
   contacts.push(contact);
   renderContacts();
@@ -139,21 +153,19 @@ exportButton.addEventListener('click', () => {
 // Generate a single VCF entry
 function generateVCF(contact) {
   let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
-  vcf += `FN:${contact.firstName} ${contact.lastName}\n`;
+
   vcf += `N:${contact.lastName};${contact.firstName};;;\n`;
+  vcf += `FN:${contact.firstName} ${contact.lastName}\n`;
+
   if (contact.company) vcf += `ORG:${contact.company}\n`;
-
-  const phone1Formatted = formatPhoneForVCF(contact.phone1);
-  const phone2Formatted = formatPhoneForVCF(contact.phone2);
-
-  if (phone1Formatted) vcf += `TEL;TYPE=CELL:${phone1Formatted}\n`;
-  if (phone2Formatted) vcf += `TEL;TYPE=HOME:${phone2Formatted}\n`;
-
+  if (contact.phone1) vcf += `TEL;TYPE=CELL:${contact.phone1}\n`;
+  if (contact.phone2) vcf += `TEL;TYPE=HOME:${contact.phone2}\n`;
   if (contact.email) vcf += `EMAIL:${contact.email}\n`;
   if (contact.address) vcf += `ADR;TYPE=HOME:;;${contact.address};;;;\n`;
   if (contact.category) vcf += `CATEGORIES:${contact.category}\n`;
 
   vcf += "END:VCARD\n";
+
   return vcf;
 }
 
