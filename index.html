@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact Entry Helper</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>iCloud Contact Entry Helper</h1>
+    <form id="contact-form">
+      <input type="text" id="firstName" placeholder="First Name" required />
+      <input type="text" id="lastName" placeholder="Last Name" required />
+      <input type="text" id="company" placeholder="Company" />
+      <input type="tel" id="phone1" placeholder="Phone 1" />
+      <input type="tel" id="phone2" placeholder="Phone 2" />
+      <input type="email" id="email" placeholder="Email" />
+      <input type="text" id="address" placeholder="Address" />
+      <button type="submit">Add Contact</button>
+    </form>
+
+    <div class="actions">
+      <button id="exportVCF">Export to VCF</button>
+      <button id="clearAll">Bulk Delete</button>
+    </div>
+
+    <table id="contact-table">
+      <thead>
+        <tr>
+          <th>First</th>
+          <th>Last</th>
+          <th>Company</th>
+          <th>Phone 1</th>
+          <th>Phone 2</th>
+          <th>Email</th>
+          <th>Address</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
