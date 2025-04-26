@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>iCloud Contact Helper</title>
+  <title>iCloud Contact Entry Tool</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header>
     <nav>
-      <h1>Contact Entry Portal</h1>
+      <h1>iCloud Contact Entry Tool</h1>
     </nav>
   </header>
   <main class="container">
@@ -21,4 +21,31 @@
       <input type="tel" id="phone2" placeholder="Phone 2" />
       <input type="email" id="email" placeholder="Email" />
       <input type="text" id="address" placeholder="Address" />
-      <button type="submit">Save Contact</but
+      <button type="submit">Save Contact</button>
+    </form>
+
+    <div class="actions">
+      <button id="exportVCF">Export to iCloud-Compatible VCF</button>
+      <button id="clearAll">Bulk Delete</button>
+    </div>
+
+    <table id="contact-table">
+      <thead>
+        <tr>
+          <th>First</th>
+          <th>Last</th>
+          <th>Company</th>
+          <th>Phone 1</th>
+          <th>Phone 2</th>
+          <th>Email</th>
+          <th>Address</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
