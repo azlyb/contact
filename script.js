@@ -151,6 +151,7 @@ function generateVCF(contact) {
 
   if (contact.email) vcf += `EMAIL:${contact.email}\n`;
   if (contact.address) vcf += `ADR;TYPE=HOME:;;${contact.address};;;;\n`;
+  if (contact.category) vcf += `CATEGORIES:${contact.category}\n`;
 
   vcf += "END:VCARD\n";
   return vcf;
