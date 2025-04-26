@@ -45,7 +45,6 @@ function appendToTable(contact, index) {
   const editBtn = document.createElement("button");
   editBtn.textContent = "Edit";
   editBtn.onclick = () => loadContactForEdit(index);
-  editBtn.style.cursor = "pointer";
   editCell.appendChild(editBtn);
 }
 
@@ -67,11 +66,21 @@ function rebuildTable() {
 }
 
 function createVCF(contact) {
-  return `BEGIN:VCARD\nVERSION:3.0\nN:${contact.lastName};${contact.firstName};;;\nFN:${contact.firstName} ${contact.lastName}\nORG:${contact.company}\nTEL;TYPE=CELL:${contact.phone1}\nTEL;TYPE=HOME:${contact.phone2}\nEMAIL;TYPE=INTERNET:${contact.email}\nADR;TYPE=HOME:;;${contact.address};;;;\nEND:VCARD\n`;
+  return `BEGIN:VCARD
+VERSION:3.0
+N:${contact.lastName};${contact.firstName};;;
+FN:${contact.firstName} ${contact.lastName}
+ORG:${contact.company}
+TEL;TYPE=CELL:${contact.phone1}
+TEL;TYPE=HOME:${contact.phone2}
+EMAIL;TYPE=INTERNET:${contact.email}
+ADR;TYPE=HOME:;;${contact.address};;;;
+END:VCARD`;
 }
 
 exportBtn.addEventListener("click", () => {
   if (contacts.length === 0) return;
+
   const vcfData = contacts.map(createVCF).join("\n");
   const blob = new Blob([vcfData], { type: "text/vcard;charset=utf-8" });
   const link = document.createElement("a");
