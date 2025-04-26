@@ -1,35 +1,57 @@
 # iCloud Contact Entry Tool
 
-This is a simple web tool to enter multiple contacts quickly and export them to an iCloud-compatible `.vcf` file.
+This is a **simple web app** to create, manage, and export your contacts into **iCloud-compatible VCF** format, with support for:
+
+- Multiple phone numbers
+- Email
+- Address
+- Company
+- Contact category (Family, Friends, Work, Other)
+- **Profile photo upload (JPEG)**
+- Auto-formatting phone numbers to `+6###-#### ####`
+- Auto-capitalizing names, company, and address
+- Fully **dark mode** styled interface
+
+---
 
 ## Features
 
-- Add multiple contacts with:
-  - First Name
-  - Last Name
-  - Company
-  - Phone 1
-  - Phone 2
-  - Email
-  - Address
-- Edit contacts before exporting
-- Export as `.vcf` (vCard 3.0) — compatible with iCloud
-- Bulk delete all contacts
-- Fully online — no local save or browser memory used
+- Add and edit contacts easily.
+- Upload a **JPEG photo** that will be embedded inside the VCF.
+- Bulk export all your contacts into `.vcf` file for iCloud.
+- Live formatting for phone numbers while typing or pasting.
+- Auto-capitalize First Name, Last Name, Company, and Address.
+- Dark themed for comfortable use.
+
+---
 
 ## How to Use
 
-1. Open the website.
-2. Enter contact info and click “Save Contact”.
-3. Add more as needed.
-4. Click “Export to iCloud-Compatible VCF”.
-5. Drag the downloaded `.vcf` file into [iCloud Contacts](https://www.icloud.com/contacts/).
+1. Fill out the contact form.
+2. Upload a **JPEG** profile photo (optional).
+3. Click **Save Contact**.
+4. View and edit contacts in the table.
+5. Click **Export to iCloud-Compatible VCF** to download all contacts.
+6. Import the `.vcf` into your iCloud contacts!
 
-## Deploying
+---
 
-Host this on GitHub Pages or any static site service.
+## Technologies
 
-## Compatibility
+- HTML5
+- CSS3 (Dark Mode)
+- Vanilla JavaScript
 
-- Designed for iCloud contact import.
-- Works on desktop and mobile browsers.
+---
+
+## Important Notes
+
+- Photo must be **JPEG** format.
+- Exported `.vcf` file is **iCloud-ready** (supports iPhone, iPad, Mac).
+- Your data stays **local** in your browser — no uploads to server.
+
+---
+
+## License
+
+MIT License
