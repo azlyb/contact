@@ -1,0 +1,88 @@
+const form = document.getElementById("contact-form");
+const tableBody = document.querySelector("#contact-table tbody");
+const exportBtn = document.getElementById("exportVCF");
+const clearBtn = document.getElementById("clearAll");
+
+let contacts = [];
+let editIndex = null;
+
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const contact = {
+    firstName: form.firstName.value.trim(),
+    lastName: form.lastName.value.trim(),
+    company: form.company.value.trim(),
+    phone1: form.phone1.value.trim(),
+    phone2: form.phone2.value.trim(),
+    email: form.email.value.trim(),
+    address: form.address.value.trim()
+  };
+
+  if (editIndex !== null) {
+    contacts[editIndex] = contact;
+    updateTable();
+    editIndex = null;
+  } else {
+    contacts.push(contact);
+    appendToTable(contact);
+  }
+
+  form.reset();
+});
+
+function appendToTable(contact, index = contacts.length - 1) {
+  const row = tableBody.insertRow();
+  row.insertCell().textContent = contact.firstName;
+  row.insertCell().textContent = contact.lastName;
+  row.insertCell().textContent = contact.company;
+  row.insertCell().textContent = contact.phone1;
+  row.insertCell().textContent = contact.phone2;
+  row.insertCell().textContent = contact.email;
+  row.insertCell().textContent = contact.address;
+  const actionsCell = row.insertCell();
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.addEventListener("click", () => editContact(index));
+  actionsCell.appendChild(editBtn);
+}
+
+function updateTable() {
+  tableBody.innerHTML = "";
+  contacts.forEach((contact, index) => {
+    appendToTable(contact, index);
+  });
+}
+
+function editContact(index) {
+  const contact = contacts[index];
+  form.firstName.value = contact.firstName;
+  form.lastName.value = contact.lastName;
+  form.company.value = contact.company;
+  form.phone1.value = contact.phone1;
+  form.phone2.value = contact.phone2;
+  form.email.value = contact.email;
+  form.address.value = contact.address;
+  editIndex = index;
+}
+
+function createVCF(contact) {
+  return `BEGIN:VCARD\nVERSION:3.0\nN:${contact.lastName};${contact.firstName};;;\nFN:${contact.firstName} ${contact.lastName}\nORG:${contact.company}\nTEL;TYPE=CELL:${contact.phone1}\nTEL;TYPE=HOME:${contact.phone2}\nEMAIL;TYPE=INTERNET:${contact.email}\nADR;TYPE=HOME:;;${contact.address};;;;\nEND:VCARD\n`;
+}
+
+exportBtn.addEventListener("click", () => {
+  if (contacts.length === 0) return;
+  const vcfData = contacts.map(createVCF).join("\n");
+  const blob = new Blob([vcfData], { type: "text/vcard;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "contacts.vcf";
+  link.click();
+  URL.revokeObjectURL(link.href);
+});
+
+clearBtn.addEventListener("click", () => {
+  contacts = [];
+  tableBody.innerHTML = "";
+  editIndex = null;
+});
