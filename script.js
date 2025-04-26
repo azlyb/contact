@@ -10,10 +10,10 @@ function applyPhoneFormat(value) {
   if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5);
   if (value.length > 10) value = value.slice(0, 10) + ' ' + value.slice(10);
 
-  return value.slice(0, 15); // limit total length
+  return value.slice(0, 15); // max 15 characters
 }
 
-// Attach live phone formatting to an input field
+// Attach live phone formatting to input fields
 function attachPhoneFormatter(input) {
   input.addEventListener('input', () => {
     input.value = applyPhoneFormat(input.value);
