@@ -1,7 +1,31 @@
-// --- Helper Functions ---
+// --- Utility Functions ---
 
 function capitalizeWords(str) {
   return str.replace(/\b\w/g, char => char.toUpperCase());
+}
+
+function applyPhoneFormat(value) {
+  value = value.replace(/\D/g, ''); // remove all non-digits
+
+  if (!value.startsWith('6')) value = '6' + value; // ensure it starts with 6
+  value = '+' + value;
+
+  if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5);
+  if (value.length > 10) value = value.slice(0, 10) + value.slice(10);
+
+  return value.slice(0, 15);
+}
+
+function formatPhoneInput(input) {
+  input.addEventListener('input', () => {
+    input.value = applyPhoneFormat(input.value);
+  });
+
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+    input.value = applyPhoneFormat(pasteData);
+  });
 }
 
 // --- Main App Logic ---
@@ -13,6 +37,10 @@ const clearButton = document.getElementById('clearAll');
 
 let contacts = [];
 
+formatPhoneInput(document.getElementById('phone1'));
+formatPhoneInput(document.getElementById('phone2'));
+
+// Handle form submission
 contactForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -20,8 +48,8 @@ contactForm.addEventListener('submit', (e) => {
 
   if (photoInput.files.length > 0) {
     const reader = new FileReader();
-    reader.onload = function(e) {
-      const photoBase64 = e.target.result.split(',')[1]; // Remove data prefix
+    reader.onload = function (e) {
+      const photoBase64 = e.target.result.split(',')[1];
       saveContact(photoBase64);
     };
     reader.readAsDataURL(photoInput.files[0]);
@@ -58,16 +86,11 @@ function saveContact(photoBase64) {
   contactForm.reset();
 }
 
-// --- Rest of your existing functions ---
-// (renderContacts, editContact, generateVCF, exportVCF, clearAll)
-
-// Render contacts in table
 function renderContacts() {
   contactTableBody.innerHTML = '';
 
   contacts.forEach((contact, index) => {
     const row = document.createElement('tr');
-
     row.innerHTML = `
       <td>${contact.firstName}</td>
       <td>${contact.lastName}</td>
@@ -79,12 +102,10 @@ function renderContacts() {
       <td>${contact.category}</td>
       <td><button onclick="editContact(${index})">Edit</button></td>
     `;
-
     contactTableBody.appendChild(row);
   });
 }
 
-// Edit a contact
 function editContact(index) {
   const contact = contacts[index];
 
@@ -95,12 +116,11 @@ function editContact(index) {
   document.getElementById('phone2').value = contact.phone2;
   document.getElementById('email').value = contact.email;
   document.getElementById('address').value = contact.address;
-  document.getElementById('category').value = contact.category;
+  document.getElementById('category').value = contact.category || '';
 
-  contacts.splice(index, 1); // Remove from list to allow re-saving
+  contacts.splice(index, 1); // Remove to allow re-saving
 }
 
-// Export contacts to VCF
 exportButton.addEventListener('click', () => {
   if (contacts.length === 0) {
     alert('No contacts to export.');
@@ -124,7 +144,6 @@ exportButton.addEventListener('click', () => {
   URL.revokeObjectURL(url);
 });
 
-// Generate a single VCF entry
 function generateVCF(contact) {
   let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
 
@@ -144,7 +163,6 @@ function generateVCF(contact) {
   return vcf;
 }
 
-// Clear all contacts
 clearButton.addEventListener('click', () => {
   if (confirm('Are you sure you want to delete all contacts?')) {
     contacts = [];
