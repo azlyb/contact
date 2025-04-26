@@ -1,38 +1,7 @@
-// --- Utility Functions ---
+// --- Helper Functions ---
 
-// Proper Malaysia phone formatting
-function applyPhoneFormat(value) {
-  value = value.replace(/\D/g, ''); // remove all non-digits
-
-  // Handle Malaysian numbers
-  if (value.startsWith('0')) {
-    value = '+60' + value.substring(1);
-  } else if (value.startsWith('60')) {
-    value = '+' + value;
-  } else if (!value.startsWith('+60')) {
-    value = '+60' + value;
-  }
-
-  if (value.length === 12) {
-    value = value.slice(0, 6) + '-' + value.slice(6);
-  } else if (value.length === 13) {
-    value = value.slice(0, 7) + '-' + value.slice(7);
-  }
-
-  return value.slice(0, 15); // max 15 characters
-}
-
-// Attach live phone formatting to input fields
-function attachPhoneFormatter(input) {
-  input.addEventListener('input', () => {
-    input.value = applyPhoneFormat(input.value);
-  });
-
-  input.addEventListener('paste', (e) => {
-    e.preventDefault();
-    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-    input.value = applyPhoneFormat(pasteData);
-  });
+function capitalizeWords(str) {
+  return str.replace(/\b\w/g, char => char.toUpperCase());
 }
 
 // --- Main App Logic ---
@@ -44,36 +13,53 @@ const clearButton = document.getElementById('clearAll');
 
 let contacts = [];
 
-// Attach phone formatter to input fields
-attachPhoneFormatter(document.getElementById('phone1'));
-attachPhoneFormatter(document.getElementById('phone2'));
-
-// Handle form submission
 contactForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
+  const photoInput = document.getElementById('photo');
+
+  if (photoInput.files.length > 0) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const photoBase64 = e.target.result.split(',')[1]; // Remove data prefix
+      saveContact(photoBase64);
+    };
+    reader.readAsDataURL(photoInput.files[0]);
+  } else {
+    saveContact('');
+  }
+});
+
+function saveContact(photoBase64) {
   let phone1 = document.getElementById('phone1').value.trim();
   let phone2 = document.getElementById('phone2').value.trim();
 
-  // Clean and fix phone numbers properly
-  phone1 = applyPhoneFormat(phone1);
-  phone2 = applyPhoneFormat(phone2);
+  if (phone1 && !phone1.startsWith('+6')) {
+    phone1 = '+6' + phone1.replace(/[^0-9]/g, '');
+  }
+  if (phone2 && !phone2.startsWith('+6')) {
+    phone2 = '+6' + phone2.replace(/[^0-9]/g, '');
+  }
 
   const contact = {
-    firstName: document.getElementById('firstName').value.trim(),
-    lastName: document.getElementById('lastName').value.trim(),
+    firstName: capitalizeWords(document.getElementById('firstName').value.trim()),
+    lastName: capitalizeWords(document.getElementById('lastName').value.trim()),
     company: document.getElementById('company').value.trim(),
     phone1: phone1,
     phone2: phone2,
     email: document.getElementById('email').value.trim(),
-    address: document.getElementById('address').value.trim(),
+    address: capitalizeWords(document.getElementById('address').value.trim()),
     category: document.getElementById('category').value.trim(),
+    photoBase64: photoBase64
   };
 
   contacts.push(contact);
   renderContacts();
   contactForm.reset();
-});
+}
+
+// --- Rest of your existing functions ---
+// (renderContacts, editContact, generateVCF, exportVCF, clearAll)
 
 // Render contacts in table
 function renderContacts() {
