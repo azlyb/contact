@@ -12,27 +12,27 @@
       <h1>iCloud Contact Entry Tool</h1>
     </nav>
   </header>
+
   <main class="container">
     <form id="contact-form">
-  <input type="text" id="firstName" placeholder="First Name" required />
-  <input type="text" id="lastName" placeholder="Last Name" required />
-  <input type="text" id="company" placeholder="Company" />
-  <input type="tel" id="phone1" placeholder="Phone 1" />
-  <input type="tel" id="phone2" placeholder="Phone 2" />
-  <input type="email" id="email" placeholder="Email" />
-  <input type="text" id="address" placeholder="Address" />
-  
-  <!-- ✨ Add this new select field -->
-  <select id="category">
-    <option value="">Select Category</option>
-    <option value="Family">Family</option>
-    <option value="Friends">Friends</option>
-    <option value="Work">Work</option>
-    <option value="Other">Other</option>
-  </select>
+      <input type="text" id="firstName" placeholder="First Name" required />
+      <input type="text" id="lastName" placeholder="Last Name" required />
+      <input type="text" id="company" placeholder="Company" />
+      <input type="tel" id="phone1" placeholder="Phone 1" />
+      <input type="tel" id="phone2" placeholder="Phone 2" />
+      <input type="email" id="email" placeholder="Email" />
+      <input type="text" id="address" placeholder="Address" />
+      
+      <select id="category">
+        <option value="">Select Category</option>
+        <option value="Family">Family</option>
+        <option value="Friends">Friends</option>
+        <option value="Work">Work</option>
+        <option value="Other">Other</option>
+      </select>
 
-  <button type="submit">Save Contact</button>
-</form>
+      <button type="submit">Save Contact</button>
+    </form>
 
     <div class="actions">
       <button id="exportVCF">Export to iCloud-Compatible VCF</button>
@@ -49,52 +49,15 @@
           <th>Phone 2</th>
           <th>Email</th>
           <th>Address</th>
-          <th>Category</th> <!-- ✨ New Category column -->
+          <th>Category</th>
           <th>Edit</th>
         </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+      </thead>
+      <tbody></tbody>
+    </table>
   </main>
 
-  <script>
-    function formatPhone(input) {
-      function applyFormat(value) {
-        value = value.replace(/\D/g, ''); // remove all non-digits
-        if (value.startsWith('6')) value = '+' + value;
-        else value = '+6' + value;
-        if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5);
-        if (value.length > 10) value = value.slice(0, 10) + ' ' + value.slice(10);
-        return value.slice(0, 15); // limit total length
-      }
-
-      function handleInput(e) {
-        input.value = applyFormat(input.value);
-      }
-
-      function handlePaste(e) {
-        e.preventDefault();
-        const pasteData = (e.clipboardData || window.clipboardData).getData('text');
-        input.value = applyFormat(pasteData);
-      }
-
-      input.addEventListener('input', handleInput);
-      input.addEventListener('paste', handlePaste);
-    }
-
-    const phone1 = document.getElementById('phone1');
-    const phone2 = document.getElementById('phone2');
-    formatPhone(phone1);
-    formatPhone(phone2);
-  </script>
-
+  <!-- Only 1 script tag here -->
   <script src="script.js"></script>
 </body>
 </html>
-
-  
-  <script src="script.js"></script>
-</body>
-</html>
-
-<script src="script.js"></script>
