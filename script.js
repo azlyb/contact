@@ -1,98 +1,163 @@
-const form = document.getElementById("contact-form");
-const tableBody = document.querySelector("#contact-table tbody");
-const exportBtn = document.getElementById("exportVCF");
-const clearBtn = document.getElementById("clearAll");
+// --- Utility Functions ---
+
+// Formats phone numbers while typing/pasting
+function applyPhoneFormat(value) {
+  value = value.replace(/\D/g, ''); // remove all non-digits
+
+  if (value.startsWith('6')) value = '+' + value;
+  else value = '+6' + value;
+
+  if (value.length > 5) value = value.slice(0, 5) + '-' + value.slice(5);
+  if (value.length > 10) value = value.slice(0, 10) + ' ' + value.slice(10);
+
+  return value.slice(0, 15); // limit total length
+}
+
+// Attach live phone formatting to an input field
+function attachPhoneFormatter(input) {
+  input.addEventListener('input', () => {
+    input.value = applyPhoneFormat(input.value);
+  });
+
+  input.addEventListener('paste', (e) => {
+    e.preventDefault();
+    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+    input.value = applyPhoneFormat(pasteData);
+  });
+}
+
+// Formats raw phone string for VCF export
+function formatPhoneForVCF(raw) {
+  if (!raw) return '';
+
+  const digits = raw.replace(/\D/g, '');
+  if (digits.length < 10) return '';
+
+  let formatted = '+6';
+  formatted += digits.slice(0, 3) + '-';
+  formatted += digits.slice(3, 7) + ' ';
+  formatted += digits.slice(7, 11);
+
+  return formatted;
+}
+
+// --- Main App Logic ---
+
+const contactForm = document.getElementById('contact-form');
+const contactTableBody = document.querySelector('#contact-table tbody');
+const exportButton = document.getElementById('exportVCF');
+const clearButton = document.getElementById('clearAll');
 
 let contacts = [];
-let editIndex = null;
 
-form.addEventListener("submit", (e) => {
+// Attach phone formatter to input fields
+attachPhoneFormatter(document.getElementById('phone1'));
+attachPhoneFormatter(document.getElementById('phone2'));
+
+// Handle form submission
+contactForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
   const contact = {
-    firstName: form.firstName.value.trim(),
-    lastName: form.lastName.value.trim(),
-    company: form.company.value.trim(),
-    phone1: form.phone1.value.trim(),
-    phone2: form.phone2.value.trim(),
-    email: form.email.value.trim(),
-    address: form.address.value.trim()
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    company: document.getElementById('company').value.trim(),
+    phone1: document.getElementById('phone1').value.trim(),
+    phone2: document.getElementById('phone2').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    address: document.getElementById('address').value.trim(),
   };
 
-  if (editIndex !== null) {
-    contacts[editIndex] = contact;
-    editIndex = null;
-    rebuildTable();
-  } else {
-    contacts.push(contact);
-    appendToTable(contact, contacts.length - 1);
+  contacts.push(contact);
+  renderContacts();
+  contactForm.reset();
+});
+
+// Render contacts in table
+function renderContacts() {
+  contactTableBody.innerHTML = '';
+
+  contacts.forEach((contact, index) => {
+    const row = document.createElement('tr');
+
+    row.innerHTML = `
+      <td>${contact.firstName}</td>
+      <td>${contact.lastName}</td>
+      <td>${contact.company}</td>
+      <td>${contact.phone1}</td>
+      <td>${contact.phone2}</td>
+      <td>${contact.email}</td>
+      <td>${contact.address}</td>
+      <td><button onclick="editContact(${index})">Edit</button></td>
+    `;
+
+    contactTableBody.appendChild(row);
+  });
+}
+
+// Edit a contact
+function editContact(index) {
+  const contact = contacts[index];
+
+  document.getElementById('firstName').value = contact.firstName;
+  document.getElementById('lastName').value = contact.lastName;
+  document.getElementById('company').value = contact.company;
+  document.getElementById('phone1').value = contact.phone1;
+  document.getElementById('phone2').value = contact.phone2;
+  document.getElementById('email').value = contact.email;
+  document.getElementById('address').value = contact.address;
+
+  contacts.splice(index, 1); // Remove from list to allow re-saving
+}
+
+// Export contacts to VCF
+exportButton.addEventListener('click', () => {
+  if (contacts.length === 0) {
+    alert('No contacts to export.');
+    return;
   }
 
-  form.reset();
+  let vcfContent = '';
+
+  contacts.forEach(contact => {
+    vcfContent += generateVCF(contact) + '\n';
+  });
+
+  const blob = new Blob([vcfContent], { type: 'text/vcard' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+
+  a.href = url;
+  a.download = 'contacts.vcf';
+  a.click();
+
+  URL.revokeObjectURL(url);
 });
 
-function appendToTable(contact, index) {
-  const row = tableBody.insertRow();
-  row.insertCell().textContent = contact.firstName;
-  row.insertCell().textContent = contact.lastName;
-  row.insertCell().textContent = contact.company;
-  row.insertCell().textContent = contact.phone1;
-  row.insertCell().textContent = contact.phone2;
-  row.insertCell().textContent = contact.email;
-  row.insertCell().textContent = contact.address;
+// Generate a single VCF entry
+function generateVCF(contact) {
+  let vcf = "BEGIN:VCARD\nVERSION:3.0\n";
+  vcf += `FN:${contact.firstName} ${contact.lastName}\n`;
+  vcf += `N:${contact.lastName};${contact.firstName};;;\n`;
+  if (contact.company) vcf += `ORG:${contact.company}\n`;
 
-  const editCell = row.insertCell();
-  const editBtn = document.createElement("button");
-  editBtn.textContent = "Edit";
-  editBtn.onclick = () => loadContactForEdit(index);
-  editCell.appendChild(editBtn);
+  const phone1Formatted = formatPhoneForVCF(contact.phone1);
+  const phone2Formatted = formatPhoneForVCF(contact.phone2);
+
+  if (phone1Formatted) vcf += `TEL;TYPE=CELL:${phone1Formatted}\n`;
+  if (phone2Formatted) vcf += `TEL;TYPE=HOME:${phone2Formatted}\n`;
+
+  if (contact.email) vcf += `EMAIL:${contact.email}\n`;
+  if (contact.address) vcf += `ADR;TYPE=HOME:;;${contact.address};;;;\n`;
+
+  vcf += "END:VCARD\n";
+  return vcf;
 }
 
-function loadContactForEdit(index) {
-  const contact = contacts[index];
-  form.firstName.value = contact.firstName;
-  form.lastName.value = contact.lastName;
-  form.company.value = contact.company;
-  form.phone1.value = contact.phone1;
-  form.phone2.value = contact.phone2;
-  form.email.value = contact.email;
-  form.address.value = contact.address;
-  editIndex = index;
-}
-
-function rebuildTable() {
-  tableBody.innerHTML = "";
-  contacts.forEach((contact, i) => appendToTable(contact, i));
-}
-
-function createVCF(contact) {
-  return `BEGIN:VCARD
-VERSION:3.0
-N:${contact.lastName};${contact.firstName};;;
-FN:${contact.firstName} ${contact.lastName}
-ORG:${contact.company}
-TEL;TYPE=CELL:${contact.phone1}
-TEL;TYPE=HOME:${contact.phone2}
-EMAIL;TYPE=INTERNET:${contact.email}
-ADR;TYPE=HOME:;;${contact.address};;;;
-END:VCARD`;
-}
-
-exportBtn.addEventListener("click", () => {
-  if (contacts.length === 0) return;
-
-  const vcfData = contacts.map(createVCF).join("\n");
-  const blob = new Blob([vcfData], { type: "text/vcard;charset=utf-8" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "contacts.vcf";
-  document.body.appendChild(link);
-  link.click();
-  URL.revokeObjectURL(link.href);
-  document.body.removeChild(link);
-});
-
-clearBtn.addEventListener("click", () => {
-  contacts = [];
-  tableBody.innerHTML = "";
+// Clear all contacts
+clearButton.addEventListener('click', () => {
+  if (confirm('Are you sure you want to delete all contacts?')) {
+    contacts = [];
+    renderContacts();
+  }
 });
